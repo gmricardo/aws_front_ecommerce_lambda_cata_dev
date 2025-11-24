@@ -57,12 +57,10 @@ jobs:
           # Sync files (long cache for assets)
           aws s3 sync dist/ s3://$S3_BUCKET \
             --delete \
-            --no-acl \
             --cache-control "max-age=31536000,public"
 
           # Upload index.html with no cache
           if [ -f dist/index.html ]; then
             aws s3 cp dist/index.html s3://$S3_BUCKET/index.html \
-              --no-acl \
               --cache-control "no-cache, no-store, must-revalidate"
           fi
