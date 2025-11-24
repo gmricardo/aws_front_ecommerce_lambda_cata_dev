@@ -49,12 +49,13 @@ jobs:
           S3_BUCKET: ${{ secrets.S3_BUCKET }}
         run: |
           set -e
+
           if [ -z "$S3_BUCKET" ]; then
             echo "ERROR: S3_BUCKET secret is not set" >&2
             exit 1
           fi
 
-          # Sync files (long cache for assets)
+          # Sync all static assets (long cache)
           aws s3 sync dist/ s3://$S3_BUCKET \
             --delete \
             --cache-control "max-age=31536000,public"
