@@ -50,18 +50,17 @@ jobs:
         run: |
           set -e
 
-          if [ -z "$S3_BUCKET" ]; then
-            echo "ERROR: S3_BUCKET secret is not set" >&2
-            exit 1
-          fi
-
-          # Sync all static assets (long cache)
-          aws s3 sync dist/ s3://$S3_BUCKET \
-            --delete \
-            --cache-control "max-age=31536000,public"
+          # Sync assets
+          aws s3 sync dist/ s3://$S3_BUCKET --delete --cache-control "max-age=31536000,public"
 
           # Upload index.html with no cache
-          if [ -f dist/index.html ]; then
-            aws s3 cp dist/index.html s3://$S3_BUCKET/index.html \
-              --cache-control "no-cache, no-store, must-revalidate"
+          HTML_FILE="dist/index.html"
+          TARGET="s3://$S3_BUCKET/index.html"
+
+          if [ -f "$HTML_FILE" ]; then
+            echo "Uploading index.html with no-cache headers..."
+            aws s3 cp "$HTML_FILE" "$TARGET" --cache-control "no-cache, no-store, must-revalidate"
+          else
+            echo "No index.html found, skipping."
           fi
+
